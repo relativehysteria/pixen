@@ -1,0 +1,19 @@
+GameConfig(
+    // The number of pixels to play with
+    num_pixels: 32768,
+
+    // Minimal brightness level of the pixels
+    min_brightness: 000,
+
+    // Maximal brightness level of the pixels
+    max_brightness: 255,
+
+    // Maximum velocity of the pixels
+    max_velocity: 100.0,
+
+    // Acceleration of the pixels
+    acceleration: 0.5,
+
+    // Friction of the pixels
+    friction: 0.05,
+)
