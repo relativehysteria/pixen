@@ -33,6 +33,9 @@ struct GameConfig {
     /// Area of effect of gravity fields
     gravity_field_aoe: f32,
 
+    /// Gravity fields will only be drawn if this is true
+    draw_fields_only_when_paused: bool,
+
     /// Friction of the pixels
     friction: f32,
 }
@@ -226,6 +229,22 @@ impl GameField {
             draw_text("PAUSED", 0., 20., 32., WHITE);
         }
 
+        // Draw gravity fields.
+        // Attractive fields are green, repelling fields are red.
+        let draw_when_paused = self.config.draw_fields_only_when_paused;
+        if (draw_when_paused && self.is_paused) || (!draw_when_paused) {
+            for field in self.gravity_fields.iter() {
+                let color = if field.strength.is_sign_negative() {
+                    RED
+                } else {
+                    GREEN
+                };
+
+                draw_circle(field.position.x, field.position.y, 10., color);
+            }
+        }
+
+        // Draw pixels
         for px in self.pixels.iter() {
             // Pixels have a random brightness every frame
             let px_color = self.rng.range(
