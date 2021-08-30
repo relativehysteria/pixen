@@ -229,6 +229,18 @@ impl GameField {
             draw_text("PAUSED", 0., 20., 32., WHITE);
         }
 
+        // Draw pixels
+        for px in self.pixels.iter() {
+            // Pixels have a random brightness every frame
+            let px_color = self.rng.range(
+                self.config.min_brightness as u64,
+                self.config.max_brightness as u64
+            ) as u8;
+            let px_color = Color::from_rgba(px_color, px_color, px_color, 255);
+
+            draw_circle(px.position.x, px.position.y, 0.75, px_color);
+        }
+
         // Draw gravity fields.
         // Attractive fields are green, repelling fields are red.
         let draw_when_paused = self.config.draw_fields_only_when_paused;
@@ -243,20 +255,7 @@ impl GameField {
                 draw_circle(field.position.x, field.position.y, 10., color);
             }
         }
-
-        // Draw pixels
-        for px in self.pixels.iter() {
-            // Pixels have a random brightness every frame
-            let px_color = self.rng.range(
-                self.config.min_brightness as u64,
-                self.config.max_brightness as u64
-            ) as u8;
-            let px_color = Color::from_rgba(px_color, px_color, px_color, 255);
-
-            draw_circle(px.position.x, px.position.y, 0.75, px_color);
-        }
     }
-
 }
 
 #[macroquad::main("Pixen")]
