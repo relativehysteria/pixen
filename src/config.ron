@@ -11,8 +11,12 @@ GameConfig(
     // Maximum velocity of the pixels
     max_velocity: 100.0,
 
-    // Acceleration of the pixels
+    // Acceleration of the pixels towards/away from a gravity field, if they
+    // are affected by it
     acceleration: 0.5,
+
+    // Area of effect of gravity fields
+    gravity_field_aoe: 300,
 
     // Friction of the pixels
     friction: 0.05,

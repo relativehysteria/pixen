@@ -5,6 +5,7 @@ use serde::Deserialize;
 use pixen::vector::*;
 use pixen::rng::*;
 use pixen::pixel::*;
+use pixen::gravity_field::*;
 
 use std::fs::File;
 
@@ -25,8 +26,12 @@ struct GameConfig {
     /// Maximum velocity of the pixels
     max_velocity: f32,
 
-    /// Acceleration of the pixels
+    /// Acceleration of the pixels towards/away from a gravity field, if they
+    /// are affected by it
     acceleration: f32,
+
+    /// Area of effect of gravity fields
+    gravity_field_aoe: f32,
 
     /// Friction of the pixels
     friction: f32,
@@ -57,6 +62,9 @@ struct GameField {
     /// Pixels in the arena
     pixels: Vec<Pixel>,
 
+    /// Gravity fields in the arena
+    gravity_fields: Vec<GravityField>,
+
     /// The game RNG
     rng: Rng,
 
@@ -70,8 +78,9 @@ impl GameField {
     fn new(config: GameConfig) -> Self {
         // Create the struct fields
         let mut temp = Self {
-            pixels: vec![],
-            rng:    Rng::new(),
+            pixels:         vec![],
+            gravity_fields: vec![],
+            rng:            Rng::new(),
             config,
         };
         temp.populate_pixels();
@@ -97,14 +106,47 @@ impl GameField {
         if is_key_pressed(KeyCode::Escape) {
             self.config = GameConfig::read_config(CONFIG_NAME);
             self.populate_pixels();
+            self.gravity_fields.clear();
         }
 
         let mouse_pos = Vector::coords(mouse_position());
-        let acceleration = self.config.acceleration;
 
+        // LMB press creates an attracting gravity field,
+        // space press creates a repelling gravity field.
+        if is_mouse_button_pressed(MouseButton::Left) {
+            self.gravity_fields.push(
+                GravityField::new(
+                    mouse_pos,
+                    self.config.gravity_field_aoe,
+                    self.config.acceleration,
+                )
+            );
+        } else if is_key_pressed(KeyCode::Space) {
+            self.gravity_fields.push(
+                GravityField::new(
+                    mouse_pos,
+                    self.config.gravity_field_aoe,
+                    -self.config.acceleration,
+                )
+            );
+        }
+
+        let mut accelerations: Vec<Vector> = vec![];
         for px in self.pixels.iter_mut() {
-            let mut direction = mouse_pos - px.position;
-            direction.normalize();
+            // Calculate the direction and acceleration of this pixel
+            accelerations.clear();
+            for field in &self.gravity_fields {
+                if !field.in_aoe(&px.position) {
+                    continue;
+                }
+
+                let mut direction = field.position - px.position;
+                direction.normalize();
+                accelerations.push(direction * Vector::from(field.strength));
+            }
+            let acceleration = accelerations.iter().fold(
+                Vector::from(0.), |acc, x| acc + *x
+            );
 
             // Create friction - inverted and normalized velocity.
             // We normalize it so that it is easy to scale.
@@ -112,19 +154,6 @@ impl GameField {
             friction.normalize();
             friction *= Vector::from(-1.);
             friction *= Vector::from(self.config.friction);
-
-
-            // If the mouse button is held, pixels accelerate toward the cursor.
-            // If the spacebar is held, pixels accelerate away from it.
-            // Otherwise they don't accelerate further and their direction
-            // remains the same.
-            let acceleration = if is_mouse_button_down(MouseButton::Left) {
-                direction * Vector::from(acceleration)
-            } else if is_key_down(KeyCode::Space) {
-                direction * Vector::from(acceleration * -1.)
-            } else {
-                Vector::from(0.)
-            };
 
             // Apply the forces to velocity
             px.velocity += acceleration;
