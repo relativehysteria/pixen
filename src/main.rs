@@ -40,6 +40,9 @@ struct GameConfig {
 
     /// Friction of the pixels
     friction: f32,
+
+    /// Whether to automatically show debug info on pause
+    debug_on_pause: bool,
 }
 
 impl GameConfig {
@@ -242,7 +245,8 @@ impl GameField {
         }
 
         // Draw debug info
-        if is_debug_key_held() {
+        if (self.config.debug_on_pause && self.is_paused)
+                || is_debug_key_held() {
             if self.is_paused {
                 draw_text("PAUSED", 0., 20., 32., RED);
             } else if is_debug_key_held() {
