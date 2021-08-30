@@ -226,7 +226,7 @@ impl GameField {
             draw_text("PAUSED", 0., 20., 32., WHITE);
         }
 
-        for px in self.pixels.iter_mut() {
+        for px in self.pixels.iter() {
             // Pixels have a random brightness every frame
             let px_color = self.rng.range(
                 self.config.min_brightness as u64,
