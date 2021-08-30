@@ -221,6 +221,11 @@ impl GameField {
     /// Renders the pixels on the screen
     fn render(&mut self) {
         clear_background(BLACK);
+
+        if self.is_paused {
+            draw_text("PAUSED", 0., 20., 32., WHITE);
+        }
+
         for px in self.pixels.iter_mut() {
             // Pixels have a random brightness every frame
             let px_color = self.rng.range(
