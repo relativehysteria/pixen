@@ -36,9 +36,12 @@ GameConfig(
         on_pause: true,
 
         // Whether to show FPS in debug info
-        fps: true,
+        fps: false,
 
         // Whether to draw gravity fields
         draw_fields: true,
+
+        // Whether to show the current number of fields in the arena
+        n_fields: true,
     ),
 )

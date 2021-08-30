@@ -216,6 +216,11 @@ impl GameField {
                           0., y_pos, font_size, WHITE);
                 y_pos += accum;
             }
+            if self.config.dbg.n_fields {
+                draw_text(&format!("Number of fields: {}",
+                                   self.gravity_fields.iter().count()),
+                                   0., y_pos, font_size, WHITE)
+            }
 
             // Draw gravity fields.
             // Attractive fields are green, repelling fields are red.
