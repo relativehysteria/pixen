@@ -111,6 +111,7 @@ impl GameField {
     ///
     /// * Escape resets the arena
     /// * Space pauses the arena (new gravity fields can still be spawned).
+    ///   If shift is held (Shift+Space), gravity fields won't be cleared.
     /// * LMB press creates an attracting gravity field,
     /// * RMB press creates a repelling gravity field.
     fn update(&mut self) {
@@ -136,11 +137,15 @@ impl GameField {
             );
         }
 
-        // Escape resets the arena
+        // Escape resets the arena.
+        // If shift is held, gravity fields won't be cleared.
         if is_key_pressed(KeyCode::Escape) {
             self.config = GameConfig::read_config(CONFIG_NAME);
             self.populate_pixels();
-            self.gravity_fields.clear();
+            if !is_key_down(KeyCode::LeftShift) &&
+                    !is_key_down(KeyCode::RightShift) {
+                self.gravity_fields.clear();
+            }
         }
 
         // Space pauses the arena
