@@ -61,11 +61,11 @@ impl GameField {
     ///   If shift is held (Shift+Space), gravity fields won't be cleared.
     /// * LMB press creates an attracting gravity field,
     /// * RMB press creates a repelling gravity field.
+    /// * MMB press removes the first placed gravity field under the cursor.
     fn update(&mut self) {
         let mouse_pos = Vector::coords(mouse_position());
 
         // LMB press creates an attracting gravity field,
-        // RMB press creates a repelling gravity field.
         if is_mouse_button_pressed(MouseButton::Left) {
             self.gravity_fields.push(
                 GravityField::new(
@@ -74,6 +74,7 @@ impl GameField {
                     self.config.phy.acceleration,
                 )
             );
+        // RMB press creates a repelling gravity field.
         } else if is_mouse_button_pressed(MouseButton::Right) {
             self.gravity_fields.push(
                 GravityField::new(
@@ -82,6 +83,14 @@ impl GameField {
                     -self.config.phy.acceleration,
                 )
             );
+        // MMB press removes the first placed gravity field under the cursor.
+        } else if is_mouse_button_pressed(MouseButton::Middle) {
+            let field = self.gravity_fields.iter().enumerate().find(|(_, e)| {
+                e.position.distance(&mouse_pos) <= 10.
+            });
+            if let Some((idx, _)) = field {
+                self.gravity_fields.swap_remove(idx);
+            }
         }
 
         // Escape resets the arena.
