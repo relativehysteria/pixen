@@ -68,6 +68,9 @@ struct GameField {
     /// The game RNG
     rng: Rng,
 
+    /// Whether the game is paused
+    is_paused: bool,
+
     /// The game configuration
     config: GameConfig,
 }
@@ -81,6 +84,7 @@ impl GameField {
             pixels:         vec![],
             gravity_fields: vec![],
             rng:            Rng::new(),
+            is_paused:      false,
             config,
         };
         temp.populate_pixels();
@@ -103,16 +107,10 @@ impl GameField {
     /// Updates the game state and ticks the physics engine once.
     ///
     /// * Escape resets the arena
+    /// * Space pauses the arena (new gravity fields can still be spawned).
     /// * LMB press creates an attracting gravity field,
     /// * RMB press creates a repelling gravity field.
     fn update(&mut self) {
-        // Escape resets the arena
-        if is_key_pressed(KeyCode::Escape) {
-            self.config = GameConfig::read_config(CONFIG_NAME);
-            self.populate_pixels();
-            self.gravity_fields.clear();
-        }
-
         let mouse_pos = Vector::coords(mouse_position());
 
         // LMB press creates an attracting gravity field,
@@ -135,6 +133,22 @@ impl GameField {
             );
         }
 
+        // Escape resets the arena
+        if is_key_pressed(KeyCode::Escape) {
+            self.config = GameConfig::read_config(CONFIG_NAME);
+            self.populate_pixels();
+            self.gravity_fields.clear();
+        }
+
+        // Space pauses the arena
+        if is_key_pressed(KeyCode::Space) {
+            self.is_paused = !self.is_paused;
+        }
+        if self.is_paused {
+            return;
+        }
+
+        // Update the state of pixels
         let mut accelerations: Vec<Vector> = vec![];
         for px in self.pixels.iter_mut() {
             // Calculate the direction and acceleration of this pixel
