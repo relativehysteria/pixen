@@ -2,25 +2,43 @@ GameConfig(
     // The number of pixels to play with
     num_pixels: 32768,
 
-    // Minimal brightness level of the pixels
-    min_brightness: 000,
+    // Physics
+    phy: PhysicsConfig(
+        // Maximum velocity of the pixels
+        max_velocity: 100.0,
 
-    // Maximal brightness level of the pixels
-    max_brightness: 255,
+        // Friction of the pixels
+        friction: 0.05,
 
-    // Maximum velocity of the pixels
-    max_velocity: 100.0,
+        // Acceleration of the pixels towards/away from a gravity field, if they
+        // are affected by it
+        acceleration: 0.5,
 
-    // Acceleration of the pixels towards/away from a gravity field, if they
-    // are affected by it
-    acceleration: 0.5,
+        // Area of effect of gravity fields
+        gravity_field_aoe: 300,
+    ),
 
-    // Area of effect of gravity fields
-    gravity_field_aoe: 300,
+    // Graphics
+    gfx: GraphicsConfig(
+        // Size of a single pixel (grain of sand)
+        pixel_size: 0.75,
 
-    // Friction of the pixels
-    friction: 0.05,
+        // Minimal brightness level of the pixels
+        min_brightness: 000,
 
-    // Whether to automatically show debug info on pause
-    debug_on_pause: false,
+        // Maximal brightness level of the pixels
+        max_brightness: 255,
+    ),
+
+    // Debug
+    dbg: DebugConfig(
+        // Whether to automatically show debug info on pause
+        on_pause: true,
+
+        // Whether to show FPS in debug info
+        fps: true,
+
+        // Whether to draw gravity fields
+        draw_fields: true,
+    ),
 )

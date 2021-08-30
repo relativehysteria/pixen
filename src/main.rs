@@ -7,11 +7,6 @@ use pixen::pixel::*;
 use pixen::gravity_field::*;
 
 
-/// Checks whether the debug key is held
-pub fn is_debug_key_held() -> bool {
-    is_key_down(KeyCode::LeftShift) || is_key_down(KeyCode::RightShift)
-}
-
 /// The game field which is used for the game
 struct GameField {
     /// Pixels in the arena
@@ -75,16 +70,16 @@ impl GameField {
             self.gravity_fields.push(
                 GravityField::new(
                     mouse_pos,
-                    self.config.gravity_field_aoe,
-                    self.config.acceleration,
+                    self.config.phy.gravity_field_aoe,
+                    self.config.phy.acceleration,
                 )
             );
         } else if is_mouse_button_pressed(MouseButton::Right) {
             self.gravity_fields.push(
                 GravityField::new(
                     mouse_pos,
-                    self.config.gravity_field_aoe,
-                    -self.config.acceleration,
+                    self.config.phy.gravity_field_aoe,
+                    -self.config.phy.acceleration,
                 )
             );
         }
@@ -128,14 +123,14 @@ impl GameField {
             let mut friction = px.velocity;
             friction.normalize();
             friction *= Vector::from(-1.);
-            friction *= Vector::from(self.config.friction);
+            friction *= Vector::from(self.config.phy.friction);
 
             // Apply the forces to velocity
             px.velocity += acceleration;
             px.velocity += friction;
 
             // Limit the velocity and apply it
-            px.velocity.limit(self.config.max_velocity);
+            px.velocity.limit(self.config.phy.max_velocity);
             px.position += px.velocity;
         }
     }
@@ -183,34 +178,38 @@ impl GameField {
         for px in self.pixels.iter() {
             // Pixels have a random brightness every frame
             let px_color = self.rng.range(
-                self.config.min_brightness as u64,
-                self.config.max_brightness as u64
+                self.config.gfx.min_brightness as u64,
+                self.config.gfx.max_brightness as u64
             ) as u8;
             let px_color = Color::from_rgba(px_color, px_color, px_color, 255);
 
-            draw_circle(px.position.x, px.position.y, 0.75, px_color);
+            draw_circle(px.position.x, px.position.y,
+                        self.config.gfx.pixel_size, px_color);
         }
 
         // Draw debug info
-        if (self.config.debug_on_pause && self.is_paused)
-                || is_debug_key_held() {
+        if (self.config.dbg.on_pause && self.is_paused) || debug_key_held() {
             if self.is_paused {
                 draw_text("PAUSED", 0., 20., 32., RED);
-            } else if is_debug_key_held() {
+            } else if debug_key_held() {
                 draw_text("RUNNING", 0., 20., 32., GREEN);
             }
-            draw_text(&format!("FPS: {}", get_fps()), 0., 40., 32., WHITE);
+            if self.config.dbg.fps {
+                draw_text(&format!("FPS: {}", get_fps()), 0., 40., 32., WHITE);
+            }
 
             // Draw gravity fields.
             // Attractive fields are green, repelling fields are red.
-            for field in self.gravity_fields.iter() {
-                let color = if field.strength.is_sign_negative() {
-                    RED
-                } else {
-                    GREEN
-                };
+            if self.config.dbg.draw_fields {
+                for field in self.gravity_fields.iter() {
+                    let color = if field.strength.is_sign_negative() {
+                        RED
+                    } else {
+                        GREEN
+                    };
 
-                draw_circle(field.position.x, field.position.y, 10., color);
+                    draw_circle(field.position.x, field.position.y, 10., color);
+                }
             }
         }
     }
