@@ -1,68 +1,15 @@
 use macroquad::prelude::*;
-use ron::de::from_reader;
-use serde::Deserialize;
 
+use pixen::config::*;
 use pixen::vector::*;
 use pixen::rng::*;
 use pixen::pixel::*;
 use pixen::gravity_field::*;
 
-use std::fs::File;
-
-
-const CONFIG_NAME: &str = "config.ron";
 
 /// Checks whether the debug key is held
 pub fn is_debug_key_held() -> bool {
     is_key_down(KeyCode::LeftShift) || is_key_down(KeyCode::RightShift)
-}
-
-#[derive(Deserialize)]
-struct GameConfig {
-    /// The number of pixels to play with.
-    num_pixels: usize,
-
-    /// Minimal brightness level of the pixels
-    min_brightness: u8,
-
-    /// Maximal brightness level of the pixels
-    max_brightness: u8,
-
-    /// Maximum velocity of the pixels
-    max_velocity: f32,
-
-    /// Acceleration of the pixels towards/away from a gravity field, if they
-    /// are affected by it
-    acceleration: f32,
-
-    /// Area of effect of gravity fields
-    gravity_field_aoe: f32,
-
-    /// Friction of the pixels
-    friction: f32,
-
-    /// Whether to automatically show debug info on pause
-    debug_on_pause: bool,
-}
-
-impl GameConfig {
-    /// Reads the file `filename`, parses the config and returns it
-    fn read_config(filename: &str) -> Self {
-        // Parse the config file
-        let config = File::open(filename)
-            .expect("Couldn't open the configuration file.");
-        let config: GameConfig = from_reader(config)
-            .expect("Couldn't parse the configuration file");
-
-        // Some assertions so that the sandbox doesn't go crazy
-        assert!(config.max_velocity   >= 0.);
-        assert!(config.friction       >= 0.);
-        assert!(config.acceleration   >= 0.);
-        assert!(config.friction       <= config.acceleration);
-        assert!(config.min_brightness <= config.max_brightness);
-
-        config
-    }
 }
 
 /// The game field which is used for the game

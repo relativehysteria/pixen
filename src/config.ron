@@ -21,6 +21,6 @@ GameConfig(
     // Friction of the pixels
     friction: 0.05,
 
-    /// Whether to automatically show debug info on pause
+    // Whether to automatically show debug info on pause
     debug_on_pause: false,
 )
