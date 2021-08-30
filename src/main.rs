@@ -12,6 +12,11 @@ use std::fs::File;
 
 const CONFIG_NAME: &str = "config.ron";
 
+/// Checks whether the debug key is held
+pub fn is_debug_key_held() -> bool {
+    is_key_down(KeyCode::LeftShift) || is_key_down(KeyCode::RightShift)
+}
+
 #[derive(Deserialize)]
 struct GameConfig {
     /// The number of pixels to play with.
@@ -32,9 +37,6 @@ struct GameConfig {
 
     /// Area of effect of gravity fields
     gravity_field_aoe: f32,
-
-    /// Gravity fields will only be drawn if this is true
-    draw_fields_only_when_paused: bool,
 
     /// Friction of the pixels
     friction: f32,
@@ -227,10 +229,6 @@ impl GameField {
     fn render(&mut self) {
         clear_background(BLACK);
 
-        if self.is_paused {
-            draw_text("PAUSED", 0., 20., 32., WHITE);
-        }
-
         // Draw pixels
         for px in self.pixels.iter() {
             // Pixels have a random brightness every frame
@@ -243,10 +241,17 @@ impl GameField {
             draw_circle(px.position.x, px.position.y, 0.75, px_color);
         }
 
-        // Draw gravity fields.
-        // Attractive fields are green, repelling fields are red.
-        let draw_when_paused = self.config.draw_fields_only_when_paused;
-        if (draw_when_paused && self.is_paused) || (!draw_when_paused) {
+        // Draw debug info
+        if is_debug_key_held() {
+            if self.is_paused {
+                draw_text("PAUSED", 0., 20., 32., RED);
+            } else if is_debug_key_held() {
+                draw_text("RUNNING", 0., 20., 32., GREEN);
+            }
+            draw_text(&format!("FPS: {}", get_fps()), 0., 40., 32., WHITE);
+
+            // Draw gravity fields.
+            // Attractive fields are green, repelling fields are red.
             for field in self.gravity_fields.iter() {
                 let color = if field.strength.is_sign_negative() {
                     RED

@@ -18,9 +18,6 @@ GameConfig(
     // Area of effect of gravity fields
     gravity_field_aoe: 300,
 
-    // Gravity fields will only be drawn if this is true
-    draw_fields_only_when_paused: true,
-
     // Friction of the pixels
     friction: 0.05,
 )
