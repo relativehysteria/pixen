@@ -101,6 +101,10 @@ impl GameField {
     }
 
     /// Updates the game state and ticks the physics engine once.
+    ///
+    /// * Escape resets the arena
+    /// * LMB press creates an attracting gravity field,
+    /// * RMB press creates a repelling gravity field.
     fn update(&mut self) {
         // Escape resets the arena
         if is_key_pressed(KeyCode::Escape) {
@@ -112,7 +116,7 @@ impl GameField {
         let mouse_pos = Vector::coords(mouse_position());
 
         // LMB press creates an attracting gravity field,
-        // space press creates a repelling gravity field.
+        // RMB press creates a repelling gravity field.
         if is_mouse_button_pressed(MouseButton::Left) {
             self.gravity_fields.push(
                 GravityField::new(
@@ -121,7 +125,7 @@ impl GameField {
                     self.config.acceleration,
                 )
             );
-        } else if is_key_pressed(KeyCode::Space) {
+        } else if is_mouse_button_pressed(MouseButton::Right) {
             self.gravity_fields.push(
                 GravityField::new(
                     mouse_pos,
