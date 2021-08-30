@@ -47,6 +47,12 @@ impl Vector {
     pub fn distance(&self, other: &Vector) -> f32 {
         f32::sqrt((other.x - self.x).powf(2.) + (other.y - self.y).powf(2.))
     }
+
+    /// Sets the vector to (0,0).
+    pub fn clear(&mut self) {
+        self.x = 0.;
+        self.y = 0.;
+    }
 }
 
 impl core::ops::AddAssign for Vector {

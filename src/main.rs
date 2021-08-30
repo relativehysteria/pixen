@@ -157,10 +157,10 @@ impl GameField {
         }
 
         // Update the state of pixels
-        let mut accelerations: Vec<Vector> = vec![];
+        let mut acceleration = Vector::new(0., 0.,);
         for px in self.pixels.iter_mut() {
             // Calculate the direction and acceleration of this pixel
-            accelerations.clear();
+            acceleration.clear();
             for field in &self.gravity_fields {
                 if !field.in_aoe(&px.position) {
                     continue;
@@ -168,11 +168,8 @@ impl GameField {
 
                 let mut direction = field.position - px.position;
                 direction.normalize();
-                accelerations.push(direction * Vector::from(field.strength));
+                acceleration += direction * Vector::from(field.strength);
             }
-            let acceleration = accelerations.iter().fold(
-                Vector::from(0.), |acc, x| acc + *x
-            );
 
             // Create friction - inverted and normalized velocity.
             // We normalize it so that it is easy to scale.
