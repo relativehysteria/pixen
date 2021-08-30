@@ -198,13 +198,23 @@ impl GameField {
 
         // Draw debug info
         if (self.config.dbg.on_pause && self.is_paused) || debug_key_held() {
+            // This variable is used for dynamically setting the y position of
+            // debug text in the top left corner
+            let mut y_pos = 20.;
+            let accum     = 20.;
+            let font_size = 32.;
+
             if self.is_paused {
-                draw_text("PAUSED", 0., 20., 32., RED);
+                draw_text("PAUSED", 0., y_pos, font_size, RED);
+                y_pos += accum;
             } else if debug_key_held() {
-                draw_text("RUNNING", 0., 20., 32., GREEN);
+                draw_text("RUNNING", 0., y_pos, font_size, GREEN);
+                y_pos += accum;
             }
             if self.config.dbg.fps {
-                draw_text(&format!("FPS: {}", get_fps()), 0., 40., 32., WHITE);
+                draw_text(&format!("FPS: {}", get_fps()),
+                          0., y_pos, font_size, WHITE);
+                y_pos += accum;
             }
 
             // Draw gravity fields.
