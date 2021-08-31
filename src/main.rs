@@ -218,7 +218,7 @@ impl GameField {
             }
             if self.config.dbg.n_fields {
                 draw_text(&format!("Number of fields: {}",
-                                   self.gravity_fields.iter().count()),
+                                   self.gravity_fields.len()),
                                    0., y_pos, font_size, WHITE)
             }
 

@@ -36,7 +36,7 @@ GameConfig(
         on_pause: true,
 
         // Whether to show FPS in debug info
-        fps: false,
+        fps: true,
 
         // Whether to draw gravity fields
         draw_fields: true,
