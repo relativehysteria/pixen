@@ -31,7 +31,7 @@ impl GameField {
     fn new(config: GameConfig) -> Self {
         // Create the struct fields
         let mut temp = Self {
-            pixels:         vec![],
+            pixels:         Vec::with_capacity(config.num_pixels),
             gravity_fields: vec![],
             rng:            Rng::new(),
             is_paused:      false,
