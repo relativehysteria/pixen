@@ -222,17 +222,24 @@ impl GameField {
                                    0., y_pos, font_size, WHITE)
             }
 
-            // Draw gravity fields.
+            // Draw gravity fields and/or their aoe.
             // Attractive fields are green, repelling fields are red.
-            if self.config.dbg.draw_fields {
+            if self.config.dbg.draw_fields || self.config.dbg.draw_aoe {
                 for field in self.gravity_fields.iter() {
+                    let x = field.position.x;
+                    let y = field.position.y;
                     let color = if field.strength.is_sign_negative() {
                         RED
                     } else {
                         GREEN
                     };
 
-                    draw_circle(field.position.x, field.position.y, 10., color);
+                    if self.config.dbg.draw_fields {
+                        draw_circle(x, y, 10., color);
+                    }
+                    if self.config.dbg.draw_aoe {
+                        draw_circle_lines(x, y, field.aoe, 1., color);
+                    }
                 }
             }
         }

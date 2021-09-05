@@ -88,6 +88,9 @@ pub struct DebugConfig {
     /// Whether to draw gravity fields
     pub draw_fields: bool,
 
+    /// Whether to draw the aoe of gravity fields
+    pub draw_aoe: bool,
+
     /// Whether to show the current number of fields in the arena
     pub n_fields: bool,
 }
